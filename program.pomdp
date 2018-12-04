@@ -1,0 +1,88 @@
+discount: 0.99
+values: reward
+states: turned_not_interested turned_interested not_turned_not_interested not_turned_interested term
+actions: move_forward greet turn report_interested report_not_interested
+observations: pos neg na
+
+start: uniform
+
+T: move_forward 
+identity
+
+T: greet 
+identity
+
+T: turn
+1.0 0.0 0.0 0.0 0.0
+1.0 0.0 0.0 0.0 0.0
+0.9 0.0 0.1 0.0 0.0
+0.0 0.9 0.0 0.1 0.0
+0.0 0.0 0.0 0.0 1.0
+
+T: report_interested 
+0.0 0.0 0.0 0.0 1.0
+0.0 0.0 0.0 0.0 1.0
+0.0 0.0 0.0 0.0 1.0
+0.0 0.0 0.0 0.0 1.0
+0.0 0.0 0.0 0.0 1.0
+
+T: report_not_interested
+0.0 0.0 0.0 0.0 1.0
+0.0 0.0 0.0 0.0 1.0
+0.0 0.0 0.0 0.0 1.0
+0.0 0.0 0.0 0.0 1.0
+0.0 0.0 0.0 0.0 1.0
+
+O: move_forward 
+0.2 0.8 0.0
+0.8 0.2 0.0
+0.2 0.8 0.0
+0.8 0.2 0.0
+0.0 0.0 1.0
+
+O: greet
+0.2 0.8 0.0
+0.8 0.2 0.0
+0.2 0.8 0.0
+0.8 0.2 0.0
+0.0 0.0 1.0
+
+O: turn
+0.2 0.8 0.0
+0.8 0.2 0.0
+0.0 0.0 1.0
+0.0 0.0 1.0
+0.0 0.0 1.0
+
+O: report_interested
+0.0 0.0 1.0
+0.0 0.0 1.0
+0.0 0.0 1.0
+0.0 0.0 1.0
+0.0 0.0 1.0
+
+
+O: report_not_interested
+0.0 0.0 1.0
+0.0 0.0 1.0
+0.0 0.0 1.0
+0.0 0.0 1.0
+0.0 0.0 1.0
+
+
+
+R: * : * : * : * 0.0
+R: move_forward : * : * : *  -4.0 
+R: greet : * : * : *  -3.0
+R: turn : * : * : *  -5.0 
+R: report_interested: turned_not_interested : * : *  -100.0
+R: report_interested: turned_interested : * : *  100.0  
+R: report_interested: not_turned_not_interested : * : *  -100.0
+R: report_interested: not_turned_interested : * : *  100.0  
+R: report_interested: term : * : *  0.0  
+
+R: report_not_interested: turned_not_interested : * : *  100.0
+R: report_not_interested: turned_interested : * : *  -100.0  
+R: report_not_interested: not_turned_not_interested : * : *  100.0
+R: report_not_interested: not_turned_interested : * : *  -100.0  
+R: report_not_interested: term : * : *  0.0  

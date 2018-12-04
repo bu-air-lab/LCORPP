@@ -1,0 +1,50 @@
+time(morning).
+time(afternoon).
+time(evening).
+location(library).
+location(classroom).
+decision(interested).
+decision(not_interested).
+lstm(one).
+lstm(zero).
+person(student).
+person(professor).
+person(visitor).
+1{atlocation(X_):location(X_)}1:-not intervene(atlocation).
+pd(rl,atlocation(X_)):-not intervene(atlocation),location(X_).
+show atlocation(X_).
+1{currenttime(X_):time(X_)}1:-not intervene(currenttime).
+pd(rt,currenttime(X_)):-not intervene(currenttime),time(X_).
+show currenttime(X_).
+1{classifier(X_):lstm(X_)}1:-not intervene(classifier).
+pd(rs,classifier(X_)):-not intervene(classifier),lstm(X_).
+show classifier(X_).
+1{intention(X_):decision(X_)}1:-not intervene(intention).
+pd(rd,intention(X_)):-not intervene(intention),decision(X_).
+show intention(X_).
+1{identity(X_):person(X_)}1:-not intervene(identity).
+pd(ri,identity(X_)):-not intervene(identity),person(X_).
+show identity(X_).
+pa(rt,currenttime(morning),di_(5,100)):-identity(student).
+pa(rt,currenttime(afternoon),di_(5,100)):-identity(student).
+pa(rt,currenttime(morning),di_(9,10)):-identity(professor).
+pa(rt,currenttime(afternoon),di_(5,100)):-identity(professor).
+pa(rt,currenttime(morning),di_(5,100)):-identity(visitor).
+pa(rt,currenttime(afternoon),di_(9,10)):-identity(visitor).
+pa(rl,atlocation(library),di_(3,10)):-identity(student).
+pa(rl,atlocation(library),di_(1,10)):-identity(professor).
+pa(rl,atlocation(library),di_(9,10)):-identity(visitor).
+pa(rd,intention(interested),di_(55,100)):-identity(student),classifier(one).
+pa(rd,intention(interested),di_(27,100)):-identity(student),classifier(zero).
+pa(rd,intention(interested),di_(3,10)):-identity(professor),classifier(one).
+pa(rd,intention(interested),di_(14,100)):-identity(professor),classifier(zero).
+pa(rd,intention(interested),di_(83,100)):-identity(visitor),classifier(one).
+pa(rd,intention(interested),di_(34,100)):-identity(visitor),classifier(zero).
+:- not currenttime(afternoon).
+:- not atlocation(classroom).
+:- not classifier(zero).
+
+hide.
+show pd(X,Y).
+show pa(X,Y,Z).
+show intention(interested).
