@@ -14,7 +14,7 @@ identity
 
 T: turn
 1.0 0.0 0.0 0.0 0.0
-1.0 0.0 0.0 0.0 0.0
+0.0 1.0 0.0 0.0 0.0
 0.9 0.0 0.1 0.0 0.0
 0.0 0.9 0.0 0.1 0.0
 0.0 0.0 0.0 0.0 1.0
@@ -34,10 +34,10 @@ T: report_not_interested
 0.0 0.0 0.0 0.0 1.0
 
 O: move_forward 
-0.2 0.8 0.0
-0.8 0.2 0.0
-0.2 0.8 0.0
-0.8 0.2 0.0
+0.9 0.1 0.0
+0.9 0.1 0.0
+0.1 0.9 0.0
+0.9 0.1 0.0
 0.0 0.0 1.0
 
 O: greet
@@ -48,8 +48,8 @@ O: greet
 0.0 0.0 1.0
 
 O: turn
-0.2 0.8 0.0
-0.8 0.2 0.0
+0.1 0.9 0.0
+0.9 0.1 0.0
 0.0 0.0 1.0
 0.0 0.0 1.0
 0.0 0.0 1.0
@@ -73,8 +73,8 @@ O: report_not_interested
 
 R: * : * : * : * 0.0
 R: move_forward : * : * : *  -4.0 
-R: greet : * : * : *  -3.0
-R: turn : * : * : *  -5.0 
+R: greet : * : * : *  -2.0
+R: turn : * : * : *  -4.5 
 R: report_interested: turned_not_interested : * : *  -100.0
 R: report_interested: turned_interested : * : *  100.0  
 R: report_interested: not_turned_not_interested : * : *  -100.0

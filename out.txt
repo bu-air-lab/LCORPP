@@ -40,8 +40,8 @@ pa(rd,intention(interested),di_(3,10)):-identity(professor),classifier(one).
 pa(rd,intention(interested),di_(14,100)):-identity(professor),classifier(zero).
 pa(rd,intention(interested),di_(83,100)):-identity(visitor),classifier(one).
 pa(rd,intention(interested),di_(34,100)):-identity(visitor),classifier(zero).
-:- not currenttime(afternoon).
-:- not atlocation(classroom).
+:- not currenttime(morning).
+:- not atlocation(library).
 :- not classifier(zero).
 
 hide.

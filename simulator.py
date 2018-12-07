@@ -11,7 +11,7 @@ import pandas as pd
 from math import sqrt
 import statistics
 import sys
-
+from termcolor import colored
 
 class Simulator:
 	def __init__(self, pomdpfile='program.pomdp'):
@@ -38,7 +38,7 @@ class Simulator:
 
 		person = random.choice(self.identity)
 		#person = 'visitor'
-		print ('\nIdentity (uniform sampling): [student, visitor, professor] : '), person
+		#print ('\nIdentity (uniform sampling): [student, visitor, professor] : '), person
 #		print ('identity is:'), person
 		if person == 'student':
 			place =self.sample(self.location,[0.7,0.3])
@@ -73,11 +73,11 @@ class Simulator:
 
 	def observe_fact(self,i):
 		random.seed(i)
-		print '\nObservations:'
+		#print '\nObservations:'
 		time = self.instance[1]
 		location = self.instance[2]
-		print ('Observed time: '),time
-		print ('Observed location: '),location
+		#print ('Observed time: '),time
+		#print ('Observed location: '),location
 		return time, location
 
 	def init_belief(self, int_prob):
@@ -88,7 +88,7 @@ class Simulator:
 		# initialize the beliefs of the states with index=0 evenly
 		
 		int_prob =float(int_prob)
-		init_belief = [1.0 - int_prob, int_prob, 0, 0, 0]
+		init_belief = [0,0,1.0 - int_prob, int_prob, 0]
 		b = np.zeros(len(self.model.states))
 		for i in range(len(self.model.states)):
 			b[i] = init_belief[i]/sum(init_belief)
@@ -166,7 +166,7 @@ class Simulator:
 		if strategy == 'corpp':
 			#prob = self.reason.query_nolstm(time, location,'reason_nolstm.plog')
 			prob = self.reason.query_nolstm(time, location,'reason_updated.plog')
-			print '\nStrategy is: ',strategy
+			print colored('\nSTRATEGY: ','red'),colored(strategy,'red')
 			print '\nOur POMDP Model states are: '
 			print self.model.states
 
@@ -223,7 +223,7 @@ class Simulator:
 
 		if strategy == 'planning':
 			#prob = self.reason.query_nolstm(time, location,'reason_nolstm.plog')
-			print '\nStrategy is: ',strategy
+			print colored('\nSTRATEGY','green'),colored(strategy,'green')
 			print '\nOur POMDP Model states are: '
 			print self.model.states
 
@@ -271,7 +271,7 @@ class Simulator:
 				print 'cost is : ', cost
 
 		if strategy == 'reasoning':
-			print '\nStrategy is: ',strategy
+			print colored('\nSTRATEGY is: ','yellow'),colored(strategy,'yellow')
 			#prob = self.reason.query_nolstm(time, location,'reason_nolstm.plog')			prob = self.reason.query_nolstm(time, location,'reason_nolstm.plog')
 			prob = self.reason.query_nolstm(time, location,'reason_updated.plog')
 			
@@ -280,28 +280,28 @@ class Simulator:
 			prob=float(prob)
 			if prob>= r_thresh and 'interested' == self.instance[3] :
 				success = 1
-				print ('This probability is greater than threshold ='+str(r_thresh)+', therefore reasoner says human HAS intention')
+				print ('Greater than threshold ='+str(r_thresh)+', -> human IS interested')
 				print 'Trial was successful'
 				tp=1
 			elif prob>= r_thresh and 'not_interested' == self.instance[3]:
 				success=0
 				fp=1
-				print ('This probability is greater than threshold ='+str(r_thresh)+', therefore reasoner says human HAS intention')
+				print ('Greater than threshold ='+str(r_thresh)+', -> human IS interested')
 				print 'Trial was unsuccessful'
 			elif prob < r_thresh and 'interested' == self.instance[3] :
 				success = 0
-				print ('This probability is less than threshold ='+str(r_thresh)+', therefore reasoner says human does NOT HAVE intention')
+				print ('Less than threshold ='+str(r_thresh)+', -> human IS NOT interested')
 				fn=1
 				print 'Trial was unsuccessful'
 			else:
 				success = 1
-				print ('This probability is less than threshold ='+str(r_thresh)+', therefore reasoner says human does NOT HAVE intention')
+				print ('Less than threshold ='+str(r_thresh)+', -> human IS NOT interested')
 				print 'Trial was successful'
 				tn=1
 
 		if strategy=='learning':
 			
-			print '\nStrategy is: ',strategy
+			print colored('\nStrategy is: ','blue'),colored(strategy,'blue')
 			res = self.learning.predict()
 		
 			if res>l_thresh and self.trajectory_label ==1.0:
@@ -325,7 +325,7 @@ class Simulator:
 
 
 		if strategy =='lstm-corpp':
-			print '\nStrategy is: ',strategy
+			print colored('\nSTRATEGY is: ','magenta'),colored(strategy,'magenta')
 			res = self.learning.predict()
 			#do not change 0.2 below
 			if res > l_thresh:
@@ -375,9 +375,9 @@ class Simulator:
 				print 'cost is : ', cost
 
 		if strategy =='lreasoning':
-			print '\nStrategy is: ',strategy
+			print colored('\nStrategy is: learning + reasoning ','cyan')
 			res = self.learning.predict()
-			if res > 0.2:
+			if res > l_thresh:
 				prob = self.reason.query(time, location,'one','reason_updated.plog')
 			else:
 				prob = self.reason.query(time, location,'zero','reason_updated.plog')
@@ -385,22 +385,22 @@ class Simulator:
 			prob=float(prob)
 			if prob>= r_thresh and 'interested' == self.instance[3] :
 				success = 1
-				print ('This probability is greater than threshold ='+str(r_thresh)+', therefore reasoner says human HAS intention')
+				print ('Greater than threshold ='+str(r_thresh)+', -> human IS interested')
 				print 'Trial was successful'
 				tp=1
 			elif prob>= r_thresh and 'not_interested' == self.instance[3]:
 				success=0
 				fp=1
-				print ('This probability is greater than threshold ='+str(r_thresh)+', therefore reasoner says human HAS intention')
+				print ('Greater than threshold ='+str(r_thresh)+', -> human IS interested')
 				print 'Trial was unsuccessful'
 			elif prob < r_thresh and 'interested' == self.instance[3] :
 				success = 0
-				print ('This probability is less than threshold ='+str(r_thresh)+', therefore reasoner says human does NOT HAVE intention')
+				print ('Less than threshold ='+str(r_thresh)+', -> human IS NOT interested')
 				fn=1
 				print 'Trial was unsuccessful'
 			else:
 				success = 1
-				print ('This probability is less than threshold ='+str(r_thresh)+', therefore reasoner says human does NOT HAVE intention')
+				print ('Less than threshold ='+str(r_thresh)+', -> human IS NOT interested')
 				print 'Trial was successful'
 				tn=1
 
@@ -436,6 +436,8 @@ class Simulator:
 			SDreward[strategy]=[]
 			SDcost[strategy]=[]
 		for i in range(num):
+			print colored('######TRIAL:','blue'),colored(i,'red'),colored('#######','blue')
+
 			del self.instance[:] 
 			self.create_instance(i)
 			time, location =self.observe_fact(i)
@@ -453,7 +455,10 @@ class Simulator:
 				total_fn[strategy]+=fn
 				SDcost[strategy].append(c)
 				SDreward[strategy].append(R)
-				#print ('total_tp:'), total_tp
+		#		print ('total_tp:'), total_tp
+		#		print ('total_tn:'), total_tn
+		#		print ('total_fp:'), total_fp
+		#		print ('total_fn:'), total_fn
 				try:
 					df.at[strategy,'Reward']= float(reward[strategy])/num
 					df.at[strategy,'SDCost']= statistics.stdev(SDcost[strategy])
@@ -488,14 +493,14 @@ class Simulator:
 
 
 def main():
-	strategy = ['learning', 'reasoning','lreasoning','planning','corpp','lstm-corpp']
-	
+	strategy = ['learning','lreasoning', 'reasoning','planning','corpp','lstm-corpp']
+	#strategy = ['reasoning','learning','lreasoning']
 	print 'startegies are:', strategy
 	Solver()
 	a=Simulator()
 	r_thresh = 0.5
-	num=25
-	l_thresh=0.2
+	num=10
+	l_thresh=0.1
 	pln_obs_noise = 0.25
 	pln_obs_acc =  1- pln_obs_noise
 	df = a.trial_num(num,strategy,r_thresh,l_thresh,pln_obs_acc)
