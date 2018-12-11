@@ -46,12 +46,12 @@ class Simulator:
 			intention =self.sample(self.intention,[0.3,0.7])
 		elif person == 'professor':
 			place =self.sample(self.location,[0.9,0.1])
-			time =self.sample(self.time,[0.9,0.05,0.05])
+			time =self.sample(self.time,[0.7,0.2,0.1])
 			intention =self.sample(self.intention,[0.1,0.9])
 		else:
-			place = self.sample(self.location,[0.1,0.9])
+			place = self.sample(self.location,[0.2,0.8])
 			#place='classroom'
-			time =self.sample(self.time,[0.05,0.9,0.05])
+			time =self.sample(self.time,[0.1,0.7,0.2])
 			#time = 'afternoon'
 			intention =self.sample(self.intention,[0.9,0.1])
 			#intention = 'interested'
