@@ -42,18 +42,18 @@ class Simulator:
 #		print ('identity is:'), person
 		if person == 'student':
 			place =self.sample(self.location,[0.7,0.3])
-			time =self.sample(self.time,[0.4,0.4,0.2])
+			time =self.sample(self.time,[0.15,0.15,0.7])
 			intention =self.sample(self.intention,[0.3,0.7])
 		elif person == 'professor':
 			place =self.sample(self.location,[0.9,0.1])
-			time =self.sample(self.time,[0.7,0.2,0.1])
+			time =self.sample(self.time,[0.8,0.1,0.1])
 			intention =self.sample(self.intention,[0.1,0.9])
 		else:
 			place = self.sample(self.location,[0.2,0.8])
 			#place='classroom'
 			time =self.sample(self.time,[0.1,0.7,0.2])
 			#time = 'afternoon'
-			intention =self.sample(self.intention,[0.9,0.1])
+			intention =self.sample(self.intention,[0.8,0.2])
 			#intention = 'interested'
 
 
@@ -500,7 +500,7 @@ def main():
 	a=Simulator()
 	r_thresh = 0.5
 	num=5000
-	l_thresh=0.2
+	l_thresh=0.25
 	pln_obs_noise = 0.25
 	pln_obs_acc =  1- pln_obs_noise
 	df = a.trial_num(num,strategy,r_thresh,l_thresh,pln_obs_acc)

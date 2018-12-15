@@ -75,14 +75,14 @@ R: * : * : * : * 0.0
 R: move_forward : * : * : *  -4.0 
 R: greet : * : * : *  -2.0
 R: turn : * : * : *  -4.5 
-R: report_interested: turned_not_interested : * : *  -100.0
-R: report_interested: turned_interested : * : *  100.0  
-R: report_interested: not_turned_not_interested : * : *  -100.0
-R: report_interested: not_turned_interested : * : *  100.0  
+R: report_interested: turned_not_interested : * : *  -80.0
+R: report_interested: turned_interested : * : *  80.0  
+R: report_interested: not_turned_not_interested : * : *  -80.0
+R: report_interested: not_turned_interested : * : *  80.0  
 R: report_interested: term : * : *  0.0  
 
-R: report_not_interested: turned_not_interested : * : *  100.0
-R: report_not_interested: turned_interested : * : *  -100.0  
-R: report_not_interested: not_turned_not_interested : * : *  100.0
-R: report_not_interested: not_turned_interested : * : *  -100.0  
+R: report_not_interested: turned_not_interested : * : *  80.0
+R: report_not_interested: turned_interested : * : *  -80.0  
+R: report_not_interested: not_turned_not_interested : * : *  80.0
+R: report_not_interested: not_turned_interested : * : *  -80.0  
 R: report_not_interested: term : * : *  0.0  
