@@ -1,0 +1,51 @@
+time = {morning, afternoon, evening}.
+location={library,classroom}.
+decision = {interested, not_interested}.
+lstm = {one, zero}.
+person = {student, professor, visitor}.
+
+atlocation :location. 
+currenttime : time.
+
+classifier: lstm. 
+intention: decision.
+identity: person.
+
+
+
+%#domain person(P).
+%#domain time(T).
+%#domain location(L).
+%#domain lstm(S).
+%#domain decision(D).
+
+
+[rl] random(atlocation).  
+[rt] random(currenttime).
+[rs] random(classifier).
+[rd] random(intention).
+[ri] random(identity).
+
+
+[rt] pr(currenttime = morning | identity = student) = 15/100.
+[rt] pr(currenttime = afternoon | identity = student) = 15/100.
+[rt] pr(currenttime = morning | identity = professor ) = 8/10.
+[rt] pr(currenttime = afternoon | identity = professor ) = 1/10.
+[rt] pr(currenttime = morning | identity = visitor ) =1/10.
+[rt] pr(currenttime = afternoon | identity = visitor ) = 7/10.
+
+[rl] pr(atlocation = library | identity = student) = 3/10.
+[rl] pr(atlocation = library | identity = professor) = 1/10.
+[rl] pr(atlocation = library | identity = visitor) = 8/10.
+
+[rd] pr(intention = interested | identity = student) =3/10 .
+[rd] pr(intention = interested | identity = professor) =1/10.
+[rd] pr(intention = interested | identity = visitor) =8/10.
+
+[rs] pr(classifier = one | intention = interested) =76/100 .
+[rs] pr(classifier= one | intention = not_interested) =29/100 .
+
+%?{intention=interested}| obs(currenttime = morning),obs(atlocation = library).
+
+?{identity=student}| obs(currenttime = afternoon),obs(atlocation = classroom),obs(classifier=zero).
+

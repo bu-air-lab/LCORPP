@@ -4,7 +4,7 @@ from pomdp_parser import Model
 import numpy as np
 from random import randint
 import random
-random.seed()
+#random.seed()
 from reason import Reason
 from learning import Learning
 import pandas as pd
@@ -20,7 +20,7 @@ class Simulator:
 		self.location = ['classroom','library']
 		self.identity = ['student','professor','visitor'] 
 		self.intention =['interested','not_interested']
-		self.reason =Reason('reason_updated.plog')
+		self.reason =Reason('reason0.plog')
 		self.model = Model(filename='program.pomdp', parsing_print_flag=False)
 		self.policy = Policy(5,4 ,output='program.policy')
 		self.instance = []
@@ -36,25 +36,28 @@ class Simulator:
 	def create_instance(self,i):
 		random.seed(i)
 
-		person = random.choice(self.identity)
-		#person = 'visitor'
+		#person = random.choice(self.identity)
+		person = 'visitor'
 		#print ('\nIdentity (uniform sampling): [student, visitor, professor] : '), person
 #		print ('identity is:'), person
 		if person == 'student':
+			#place ='classroom'
 			place =self.sample(self.location,[0.7,0.3])
-			time =self.sample(self.time,[0.15,0.15,0.7])
-			intention =self.sample(self.intention,[0.3,0.7])
+			#time ='evening'
+			#time =self.sample(self.time,[0.15,0.15,0.7])
+			#intention =self.sample(self.intention,[0.3,0.7])
+			#intention = 'not_interested'
 		elif person == 'professor':
 			place =self.sample(self.location,[0.9,0.1])
 			time =self.sample(self.time,[0.8,0.1,0.1])
 			intention =self.sample(self.intention,[0.1,0.9])
 		else:
-			place = self.sample(self.location,[0.2,0.8])
-			#place='classroom'
-			time =self.sample(self.time,[0.1,0.7,0.2])
-			#time = 'afternoon'
+			#place = self.sample(self.location,[0.2,0.8])
+			place='classroom'
+			#time =self.sample(self.time,[0.1,0.7,0.2])
+			time = 'afternoon'
 			intention =self.sample(self.intention,[0.8,0.2])
-			#intention = 'interested'
+			intention = 'interested'
 
 
 		self.trajectory_label = self.learning.get_traj(intention)
@@ -96,7 +99,7 @@ class Simulator:
 		print b
 		return b
 			
-		return b
+
 
 
 	def get_state_index(self,state):
@@ -165,7 +168,7 @@ class Simulator:
 
 		if strategy == 'corpp':
 			#prob = self.reason.query_nolstm(time, location,'reason_nolstm.plog')
-			prob = self.reason.query_nolstm(time, location,'reason_updated.plog')
+			prob = self.reason.query_nolstm(time, location,'reason0.plog')
 			print colored('\nSTRATEGY: ','red'),colored(strategy,'red')
 			print '\nOur POMDP Model states are: '
 			print self.model.states
@@ -273,7 +276,7 @@ class Simulator:
 		if strategy == 'reasoning':
 			print colored('\nSTRATEGY is: ','yellow'),colored(strategy,'yellow')
 			#prob = self.reason.query_nolstm(time, location,'reason_nolstm.plog')			prob = self.reason.query_nolstm(time, location,'reason_nolstm.plog')
-			prob = self.reason.query_nolstm(time, location,'reason_updated.plog')
+			prob = self.reason.query_nolstm(time, location,'reason0.plog')
 			
 			print ('P(ineterested)| observed time and location: '), prob
 			
@@ -330,9 +333,9 @@ class Simulator:
 			#do not change 0.2 below
 			if res > l_thresh:
 				#prob = self.reason.query(time, location,'one','reason.plog')
-				prob = self.reason.query(time, location,'one','reason_updated.plog')
+				prob = self.reason.query(time, location,'one','reason0.plog')
 			else:
-				prob = self.reason.query(time, location,'zero','reason_updated.plog')
+				prob = self.reason.query(time, location,'zero','reason0.plog')
 			print '\nOur POMDP Model states are: '
 			print self.model.states
 			
@@ -378,9 +381,9 @@ class Simulator:
 			print colored('\nStrategy is: learning + reasoning ','cyan')
 			res = self.learning.predict()
 			if res > l_thresh:
-				prob = self.reason.query(time, location,'one','reason_updated.plog')
+				prob = self.reason.query(time, location,'one','reason0.plog')
 			else:
-				prob = self.reason.query(time, location,'zero','reason_updated.plog')
+				prob = self.reason.query(time, location,'zero','reason0.plog')
 			lr_thresh = r_thresh
 			prob=float(prob)
 			if prob>= r_thresh and 'interested' == self.instance[3] :
@@ -493,15 +496,15 @@ class Simulator:
 
 
 def main():
-	strategy = ['learning','lreasoning', 'reasoning','planning','corpp','lstm-corpp']
-	#strategy = ['reasoning','learning','lreasoning']
+	#strategy = ['learning','lreasoning', 'reasoning','planning','corpp','lstm-corpp']
+	strategy = ['lstm-corpp']
 	print 'startegies are:', strategy
 	Solver()
 	a=Simulator()
 	r_thresh = 0.5
-	num=5000
+	num=10
 	l_thresh=0.25
-	pln_obs_noise = 0.25
+	pln_obs_noise = 0.1
 	pln_obs_acc =  1- pln_obs_noise
 	df = a.trial_num(num,strategy,r_thresh,l_thresh,pln_obs_acc)
 	a.print_results(df)

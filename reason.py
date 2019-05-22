@@ -41,7 +41,7 @@ class Reason:
 		lines = readFile.readlines()
 		readFile.close()
 		w = open(filename,'w')
-		w.writelines([item for item in lines[:-1]])
+		w.writelines([item for item in lines[:-2]])
 		w.close()
 
 def main():
