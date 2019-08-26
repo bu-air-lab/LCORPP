@@ -1,0 +1,5 @@
+,F1 Score low,F1 Score medium,F1 Score high,Cost low,Cost medium,Cost high,Cost low std,Cost medium std,Cost high std,Accuracy low,Accuracy medium,Accuracy high,,F1 score low std,F1 score medium std,F1 score high std
+Reasoning,0.29,0.34,0.58,,,,,,,0.31,0.51,0.7,,0.02,0.012,0.03
+Learning+Reasoning,0.39,0.61,0.73,,,,,,,0.48,0.71,0.79,,0.015,0.014,0.02
+CORPP,0.81,0.87,0.89,10.2,10.5,9.8,0.2,0.12,0.3,0.81,0.87,0.89,,0.02,0.012,0.03
+LeRDeM,0.88,0.89,0.91,10.4,9.2,7.7,0.15,0.14,0.2,0.88,0.89,0.91,,0.015,0.014,0.02

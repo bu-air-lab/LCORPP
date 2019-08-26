@@ -27,19 +27,19 @@ pd(ri,identity(X_)):-not intervene(identity),person(X_).
 show identity(X_).
 pa(rt,currenttime(morning),di_(15,100)):-identity(student).
 pa(rt,currenttime(afternoon),di_(15,100)):-identity(student).
-pa(rt,currenttime(morning),di_(8,10)):-identity(professor).
-pa(rt,currenttime(afternoon),di_(1,10)):-identity(professor).
+pa(rt,currenttime(morning),di_(7,10)):-identity(professor).
+pa(rt,currenttime(afternoon),di_(15,100)):-identity(professor).
 pa(rt,currenttime(morning),di_(1,10)):-identity(visitor).
 pa(rt,currenttime(afternoon),di_(7,10)):-identity(visitor).
 pa(rl,atlocation(library),di_(3,10)):-identity(student).
-pa(rl,atlocation(library),di_(1,10)):-identity(professor).
-pa(rl,atlocation(library),di_(8,10)):-identity(visitor).
+pa(rl,atlocation(library),di_(2,10)):-identity(professor).
+pa(rl,atlocation(library),di_(7,10)):-identity(visitor).
 pa(rd,intention(interested),di_(3,10)):-identity(student).
-pa(rd,intention(interested),di_(1,10)):-identity(professor).
+pa(rd,intention(interested),di_(2,10)):-identity(professor).
 pa(rd,intention(interested),di_(8,10)):-identity(visitor).
 pa(rs,classifier(one),di_(76,100)):-intention(interested).
 pa(rs,classifier(one),di_(29,100)):-intention(not_interested).
-:- not currenttime(evening).
+:- not currenttime(morning).
 :- not atlocation(classroom).
 :- not classifier(zero).
 

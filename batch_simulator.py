@@ -13,8 +13,11 @@ import statistics
 import sys
 from termcolor import colored
 import json
+import simulator
+import csv
 
-class Simulator:
+class BatchSimulator(simulator.Simulator):
+	'''
 	def __init__(self, pomdpfile='program.pomdp'):
 		
 		self.time = ['morning','afternoon','evening']
@@ -26,19 +29,15 @@ class Simulator:
 		self.policy = Policy(5,4 ,output='program.policy')
 		self.instance = []
 		self.results={}
-		self.IDs={}
-		self.IDs['1']=[]
-		self.IDs['0']=[]
 		self.learning=Learning('./','interposx.csv','interposy.csv')
 		self.trajectory_label=0
-		self.exp_dataset = {}
 		
 
 	def sample (self, alist, distribution):
 
 		return np.random.choice(alist, p=distribution)
-
-	def create_instance(self,i):
+	'''
+	def create_instance(self,i,batchnumber):
 		random.seed(i)
 
 		person = random.choice(self.identity)
@@ -55,19 +54,20 @@ class Simulator:
 			intention =self.sample(self.intention,[0.3,0.7])
 			#intention = 'not_interested'
 		elif person == 'professor':
-			place =self.sample(self.location,[0.9,0.1])
-			time =self.sample(self.time,[0.8,0.1,0.1])
-			intention =self.sample(self.intention,[0.1,0.9])
+			place =self.sample(self.location,[0.8,0.2])
+			time =self.sample(self.time,[0.7,0.15,0.15])
+			intention =self.sample(self.intention,[0.2,0.8])
 		else:
 			#place = self.sample(self.location,[0.2,0.8])
 			place='classroom'
 			#time =self.sample(self.time,[0.1,0.7,0.2])
 			time = 'afternoon'
-			intention =self.sample(self.intention,[0.7,0.3])
+			intention =self.sample(self.intention,[0.8,0.2])
 			#intention = 'interested'
 
 
-		self.trajectory_label, ID = self.learning.get_traj(intention)
+		ID = self.select_trajectory(intention, batchnumber)
+		
 
 		print ('Sampling time, location and intention for the identity: '+person)
 		
@@ -82,6 +82,29 @@ class Simulator:
 		return self.instance
 
 
+	def select_trajectory(self, intention, batchnumber):
+
+		#out =self.sample(['experience','dataset'],[(batchnumber-1)/2.0 , 1- (batchnumber-1)/2.0])
+		if batchnumber==1:
+			out='dataset'
+		elif batchnumber==3:
+			out= 'experience'
+		else:
+			out = self.sample(['experience','dataset'],[0.8,0.2])
+		if out=='experience':
+
+			if intention=='interested':
+				ID = random.choice(self.IDs['1'])
+				self.learning.get_traj_from_label(ID)
+			else:
+				ID = random.choice(self.IDs['0'])
+				self.learning.get_traj_from_label(ID)
+		else:
+
+			self.trajectory_label, ID = self.learning.get_traj(intention)
+
+		return ID
+	'''
 	def observe_fact(self,i):
 		random.seed(i)
 		#print '\nObservations:'
@@ -163,6 +186,7 @@ class Simulator:
 		
 		b = b / sum(b)
 		return b
+
 
 	def run(self, strategy,time,location,r_thresh,l_thresh, pln_obs_acc):
 		a_cnt=0
@@ -376,7 +400,6 @@ class Simulator:
 						tn=1
 						value.append('not_interested')
 						print 'Trial was successfull'
-
 					elif 'report_interested' in a and 'interested' == self.instance[3]:
 						success= 1
 						tp=1
@@ -428,10 +451,11 @@ class Simulator:
 
 						
 		return cost, success, tp, tn, fp, fn,R, value
+	'''
 
-
-	def trial_num(self, num,strategylist,r_thresh,l_thresh, pln_obs_acc):
-		df = pd.DataFrame()
+	def trial_num(self, num,strategylist,r_thresh,l_thresh, pln_obs_acc,batches):
+		df =[0,pd.DataFrame(),pd.DataFrame(),pd.DataFrame()]
+		
 		total_results={}
 		subresult=[]
 		total_success = {}
@@ -446,66 +470,86 @@ class Simulator:
 		reward={}
 		SDreward={}
 
-		for strategy in strategylist:
-			total_success[strategy] = 0
-			total_cost[strategy] = 0
-			total_tp[strategy]= 0
-			total_tn[strategy]= 0
-			total_fp[strategy]= 0
-			total_fn[strategy]= 0
-			prec[strategy] = 0
-			recall[strategy] = 0
-			reward[strategy]=0
-			SDreward[strategy]=[]
-			SDcost[strategy]=[]
-		for i in range(num):
-			print colored('######TRIAL:','blue'),colored(i,'red'),colored('#######','blue')
-			subresult=[]
-			del self.instance[:] 
-			self.create_instance(i)
-			time, location =self.observe_fact(i)
+	
+		for batchnumber in batches:
+			print '########################## BATCH '+str(batchnumber)+' #########################'
+
+			for strategy in strategylist:
+				total_success[strategy] = 0
+				total_cost[strategy] = 0
+				total_tp[strategy]= 0
+				total_tn[strategy]= 0
+				total_fp[strategy]= 0
+				total_fn[strategy]= 0
+				prec[strategy] = 0
+				recall[strategy] = 0
+				reward[strategy]=0
+				SDreward[strategy]=[]
+				SDcost[strategy]=[] 
+
+			for i in range(num):
+				print colored('######TRIAL:','blue'),colored(i,'red'),colored('#######','blue')
+				subresult=[]
+				del self.instance[:] 
+				self.create_instance(i,batchnumber)
+				time, location =self.observe_fact(i)
 		
-			for strategy in strategylist:	
-			
-				c, s, tp, tn, fp, fn, R,value=self.run(strategy,time,location,r_thresh,l_thresh, pln_obs_acc)
-				#self.IDs[self.instance[5]]=1 if tp ==1 or fn ==1
-				#self.IDs[self.instance[5]]=0 if fp ==1 or tn ==1
-				subresult.append((value, strategy))
-				reward[strategy]+=R
-				total_cost[strategy]+=c
-				total_success[strategy]+=s
-				total_tp[strategy]+=tp
-				total_tn[strategy]+=tn
-				total_fp[strategy]+=fp
-				total_fn[strategy]+=fn
-				SDcost[strategy].append(c)
-				SDreward[strategy].append(R)
-		#		print ('total_tp:'), total_tp
-		#		print ('total_tn:'), total_tn
-		#		print ('total_fp:'), total_fp
-		#		print ('total_fn:'), total_fn
-				try:
-					df.at[strategy,'Reward']= float(reward[strategy])/num
-					df.at[strategy,'SDCost']= statistics.stdev(SDcost[strategy])
-					df.at[strategy,'SDreward']= statistics.stdev(SDreward[strategy])
-					df.at[strategy,'Cost']= float(total_cost[strategy])/num
-					df.at[strategy,'Success']= float(total_success[strategy])/num
-					prec[strategy] = round(float(total_tp[strategy])/(total_tp[strategy] + total_fp[strategy]),2)
-					recall[strategy] = round(float(total_tp[strategy])/(total_tp[strategy] + total_fn[strategy]),2)
-					df.at[strategy,'Precision'] = prec[strategy] 
-					df.at[strategy,'Recall'] = recall[strategy] 
-					df.at[strategy,'F1 Score']= round(2*prec[strategy]*recall[strategy]/(prec[strategy]+recall[strategy]),2)
+				for strategy in strategylist:
+
+					#if batchnumber==1:
+					#	strategy =='corpp'			
+					c, s, tp, tn, fp, fn, R,value=self.run(strategy,time,location,r_thresh,l_thresh, pln_obs_acc)
+					if (tp ==1 or fp ==1):
+						if self.instance[5] not in self.IDs['1']:
+							self.IDs['1'].append(self.instance[5]) 
+					elif (fn ==1 or tn ==1):
+						if self.instance[5] not in self.IDs['0']: 
+							self.IDs['0'].append(self.instance[5]) 
+					subresult.append((value, strategy))
+					reward[strategy]+=R
+					total_cost[strategy]+=c
+					total_success[strategy]+=s
+					total_tp[strategy]+=tp
+					total_tn[strategy]+=tn
+					total_fp[strategy]+=fp
+					total_fn[strategy]+=fn
+					SDcost[strategy].append(c)
+					SDreward[strategy].append(R)
+			#		print ('total_tp:'), total_tp
+			#		print ('total_tn:'), total_tn
+			#		print ('total_fp:'), total_fp
+			#		print ('total_fn:'), total_fn
+					try:
+						df[batchnumber].at[strategy,'Reward']= float(reward[strategy])/num
+						df[batchnumber].at[strategy,'SDCost']= statistics.stdev(SDcost[strategy])
+						df[batchnumber].at[strategy,'SDreward']= statistics.stdev(SDreward[strategy])
+						df[batchnumber].at[strategy,'Cost']= float(total_cost[strategy])/num
+						df[batchnumber].at[strategy,'Success']= float(total_success[strategy])/num
+						prec[strategy] = round(float(total_tp[strategy])/(total_tp[strategy] + total_fp[strategy]),2)
+						recall[strategy] = round(float(total_tp[strategy])/(total_tp[strategy] + total_fn[strategy]),2)
+						df[batchnumber].at[strategy,'Precision'] = prec[strategy] 
+						df[batchnumber].at[strategy,'Recall'] = recall[strategy] 
+						df[batchnumber].at[strategy,'F1 Score']= round(2*prec[strategy]*recall[strategy]/(prec[strategy]+recall[strategy]),2)
+					
+					except:
+						print 'Can not divide by zero'
+						print ()
+						df[batchnumber].at[strategy,'Precision']= 0
+						df[batchnumber].at[strategy,'Recall']= 0
+						df[batchnumber].at[strategy,'F1 Score']= 0
 				
-				except:
-					print 'Can not divide by zero'
-					df.at[strategy,'Precision']= 0
-					df.at[strategy,'Recall']= 0
-					df.at[strategy,'F1 Score']= 0
-				
-			self.results[i] =[self.instance[:],subresult[:]]      # important: Do not copy by reference
-			print i
-			print [self.instance,subresult]
-			print self.results
+				#self.results[i] =[self.instance[:],subresult[:]]      # important: Do not copy by reference
+				#print i
+				#print [self.instance,subresult]
+				#print self.results
+
+			#with open('data'+str(batchnumber)+'.json', 'w') as f:
+			#	json.dump(self.results, f)
+
+				#print self.IDs
+				#print len(self.IDs['1'])
+				#print len(self.IDs['0'])
+
 			#raw_input()
 		#print 'fp',total_fp['learning']
 		#print 'fn',total_fn['learning'] 
@@ -518,25 +562,35 @@ class Simulator:
 
 	def print_results(self,df):
 		print '\nWRAP UP OF RESULTS:'
-		print df
+		print df[1]
+		print df[2]
+		print df[3]
+
+		pd.concat([df[1], df[2],df[3]], axis=0).to_csv('results.csv', sep=',')
+		#df[1].to_csv('results.csv', sep=',')
+		##df[2].to_csv('results.csv', sep=',')
+		#df[3].to_csv('results.csv', sep=',')
+		
 	
 
 
 def main():
 	#strategy = ['learning','lreasoning', 'reasoning','planning','corpp','lstm-corpp']
-	strategy = ['lstm-corpp','planning']
+	batches = [1,2,3]
+	strategy = ['lstm-corpp']
 	print 'startegies are:', strategy
 	Solver()
-	a=Simulator()
+	a=BatchSimulator()
 	r_thresh = 0.5
-	num=15
-	l_thresh=0.25
-	pln_obs_noise = 0.1
+	num=200
+	l_thresh=0.5
+	pln_obs_noise = 0.35
 	pln_obs_acc =  1- pln_obs_noise
-	df = a.trial_num(num,strategy,r_thresh,l_thresh,pln_obs_acc)
+	df = a.trial_num(num,strategy,r_thresh,l_thresh,pln_obs_acc,batches)
+
 	print a.results
-	with open('data.json', 'w') as f:
-		json.dump(a.results, f)
+	#with open('data.json', 'w') as f:
+	#	json.dump(a.results, f)
 	a.print_results(df)
 
 
