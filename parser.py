@@ -3,6 +3,7 @@ import os
 import sys
 import subprocess
 import numpy as np
+import getpass
 
 class Policy:
 	def __init__(self,num_states,num_actions, output='program.policy'):
@@ -49,7 +50,8 @@ class Policy:
 
 class Solver:
 	def __init__(self):
-		path = '/home/saeid/software/sarsop/src/pomdpsol'
+
+		path = '/home/'+getpass.getuser()+'/Software/sarsop/src/pomdpsol'
 		if os.path.exists(path):
 			subprocess.check_output(path + ' program.pomdp --timeout 60 --output program.policy', shell=True)
 			#subprocess.call(path + ' program.pomdp --timeout 5 --output program.policy', shell=True)

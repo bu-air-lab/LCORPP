@@ -14,6 +14,7 @@ import sys
 from termcolor import colored
 import json
 
+
 class Simulator:
 	def __init__(self, pomdpfile='program.pomdp'):
 		
@@ -44,29 +45,24 @@ class Simulator:
 		random.seed(i)
 
 		person = random.choice(self.identity)
-		print (person)
-		#raw_input()
-		#person = 'visitor'
-		#print ('\nIdentity (uniform sampling): [student, visitor, professor] : '), person
-#		print ('identity is:'), person
+	
 		if person == 'student':
-			#place ='classroom'
+		
 			place =self.sample(self.location,[0.7,0.3])
-			#time ='evening'
 			time =self.sample(self.time,[0.15,0.15,0.7])
 			intention =self.sample(self.intention,[0.3,0.7])
-			#intention = 'not_interested'
+			
 		elif person == 'professor':
+
 			place =self.sample(self.location,[0.9,0.1])
 			time =self.sample(self.time,[0.8,0.1,0.1])
 			intention =self.sample(self.intention,[0.1,0.9])
+
 		else:
-			#place = self.sample(self.location,[0.2,0.8])
-			place='classroom'
-			#time =self.sample(self.time,[0.1,0.7,0.2])
-			time = 'afternoon'
+			place = self.sample(self.location,[0.2,0.8])
+			time =self.sample(self.time,[0.1,0.7,0.2])
 			intention =self.sample(self.intention,[0.7,0.3])
-			#intention = 'interested'
+			
 
 
 		self.trajectory_label, ID = self.learning.get_traj(intention)
@@ -86,11 +82,10 @@ class Simulator:
 
 	def observe_fact(self,i):
 		random.seed(i)
-		#print '\nObservations:'
+	
 		time = self.instance[1]
 		location = self.instance[2]
-		#print ('Observed time: '),time
-		#print ('Observed location: '),location
+
 		return time, location
 
 	def init_belief(self, int_prob):
@@ -119,9 +114,8 @@ class Simulator:
 
 	def init_state(self):
 		state=random.choice(['not_turned_not_interested','not_turned_interested'])
-		#print '\nRandomly selected state from [not_forward_not_interested,not_forward_interested] =',state
 		s_idx = self.get_state_index(state)
-		#print s_idx
+		
 		return s_idx, state
 
 	def get_obs_index(self, obs):
@@ -134,24 +128,22 @@ class Simulator:
 
 		p=pln_obs_acc
 		if self.model.actions[a_idx]=='move_forward' and intention=='interested':
-			#obs='physical'
+			
 			obs=self.sample(['pos','neg'],[p,1-p])
 		elif self.model.actions[a_idx]=='move_forward' and intention=='not_interested':
 			obs=obs=self.sample(['pos','neg'],[1-p,p])
 		elif self.model.actions[a_idx]=='greet' and intention=='interested':
-			#obs = 'verbal'
+			
 			obs=self.sample(['pos','neg'],[p,1-p])
 		elif self.model.actions[a_idx]=='greet' and intention=='not_interested':
 			obs=self.sample(['pos','neg'],[1-p,p])
 		elif self.model.actions[a_idx]=='turn' and intention=='interested':
-			#obs = 'verbal'
+			
 			obs=self.sample(['pos','neg'],[p,1-p])
 		elif self.model.actions[a_idx]=='turn' and intention=='not_interested':
 			obs=self.sample(['pos','neg'],[1-p,p])
 		else:
 			obs = 'na'
-		#l=len(self.model.observations)-1
-		#o_idx=randint(0,l)
 		o_idx=self.get_obs_index(obs)
 		print ('random observation is: ',self.model.observations[o_idx])
 		return o_idx
@@ -159,11 +151,11 @@ class Simulator:
 	
 
 	def update(self, a_idx,o_idx,b ):
-		b = np.dot(b, self.model.trans_mat[a_idx, :])
 
+		b = np.dot(b, self.model.trans_mat[a_idx, :])
 		b = [b[i] * self.model.obs_mat[a_idx, i, o_idx] for i in range(len(self.model.states))]
-		
 		b = b / sum(b)
+
 		return b
 
 	def run(self, strategy,time,location,r_thresh,l_thresh, pln_obs_acc):
@@ -176,10 +168,10 @@ class Simulator:
 		cost =0
 		R = 0
 		value= []
-		#value.append(self.instance)
+		
 
 		if strategy == 'corpp':
-			#prob = self.reason.query_nolstm(time, location,'reason_nolstm.plog')
+			
 			prob = self.reason.query_nolstm(time, location,'reason0.plog')
 			print (colored('\nSTRATEGY: ','red'),colored(strategy,'red'))
 			print ('\nOur POMDP Model states are: ')
@@ -188,8 +180,6 @@ class Simulator:
 			s_idx,temp = self.init_state()
 			b = self.init_belief(prob)
 			
-			#print ( 'b shape is,', b.shape )
-			#print b
 
 			while True: 
 				a_idx=self.policy.select_action(b)
@@ -201,11 +191,7 @@ class Simulator:
 				print('action selected',a)
 				
 				o_idx = self.observe(a_idx,self.instance[3],pln_obs_acc)
-				#print ('transition matrix shape is', self.model.trans_mat.shape)
-				#print self.model.trans_mat[a_idx,:,:]
-				#print ('observation matrix shape is', self.model.obs_mat.shape)
-				#print self.model.trans_mat[a_idx,:,:]
-				#print s_idx
+			
 				R = R + self.model.reward_mat[a_idx,s_idx]
 				print ('Reward is : ', cost)
 				#print ('Total reward is,' , cost)		
@@ -237,14 +223,12 @@ class Simulator:
 
 
 		if strategy == 'planning':
-			#prob = self.reason.query_nolstm(time, location,'reason_nolstm.plog')
+		
 			print (colored('\nSTRATEGY','green'),colored(strategy,'green'))
 			print ('\nOur POMDP Model states are: ')
 			print (self.model.states)
 
 			s_idx,temp = self.init_state()
-			#init_belief = [0.25, 0.25, 0.25, 0.25, 0]
-			#b = np.zeros(len(init_belief))
 			b = np.ones(len(self.model.states))
 			for i in range(len(self.model.states)):
 				b[i] = b[i]/len(self.model.states)
@@ -257,8 +241,7 @@ class Simulator:
 
 				o_idx = self.observe(a_idx,self.instance[3],pln_obs_acc)
 				R = R + self.model.reward_mat[a_idx,s_idx]
-				print ('R is : ', cost)
-				#print ('Total reward is,' , cost)		
+				print ('R is : ', cost)		
 				b =self.update(a_idx,o_idx, b)
 				print (b)
 				
@@ -291,7 +274,7 @@ class Simulator:
 
 		if strategy == 'reasoning':
 			print (colored('\nSTRATEGY is: ','yellow'),colored(strategy,'yellow'))
-			#prob = self.reason.query_nolstm(time, location,'reason_nolstm.plog')			prob = self.reason.query_nolstm(time, location,'reason_nolstm.plog')
+		
 			prob = self.reason.query_nolstm(time, location,'reason0.plog')
 			
 			print ('P(ineterested)| observed time and location: '), prob
@@ -346,9 +329,8 @@ class Simulator:
 		if strategy =='lstm-corpp':
 			print (colored('\nSTRATEGY is: ','magenta'),colored(strategy,'magenta'))
 			res = self.learning.predict()
-			#do not change 0.2 below
+			
 			if res > l_thresh:
-				#prob = self.reason.query(time, location,'one','reason.plog')
 				prob = self.reason.query(time, location,'one','reason0.plog')
 			else:
 				prob = self.reason.query(time, location,'zero','reason0.plog')
@@ -366,8 +348,7 @@ class Simulator:
 
 				o_idx = self.observe(a_idx,self.instance[3],pln_obs_acc)
 				R = R + self.model.reward_mat[a_idx,s_idx]
-				print ('R is : ', cost)
-				#print ('Total reward is,' , cost)		
+				print ('R is : ', cost)		
 				b =self.update(a_idx,o_idx, b)
 				print (b)
 				
@@ -470,8 +451,6 @@ class Simulator:
 			for strategy in strategylist:	
 			
 				c, s, tp, tn, fp, fn, R,value=self.run(strategy,time,location,r_thresh,l_thresh, pln_obs_acc)
-				#self.IDs[self.instance[5]]=1 if tp ==1 or fn ==1
-				#self.IDs[self.instance[5]]=0 if fp ==1 or tn ==1
 				subresult.append((value, strategy))
 				reward[strategy]+=R
 				total_cost[strategy]+=c
@@ -482,10 +461,7 @@ class Simulator:
 				total_fn[strategy]+=fn
 				SDcost[strategy].append(c)
 				SDreward[strategy].append(R)
-		#		print ('total_tp:'), total_tp
-		#		print ('total_tn:'), total_tn
-		#		print ('total_fp:'), total_fp
-		#		print ('total_fn:'), total_fn
+
 				try:
 					df.at[strategy,'Reward']= float(reward[strategy])/num
 					df.at[strategy,'SDCost']= statistics.stdev(SDcost[strategy])
@@ -508,9 +484,7 @@ class Simulator:
 			print (i)
 			print ([self.instance,subresult])
 			print (self.results)
-			#raw_input()
-		#print 'fp',total_fp['learning']
-		#print 'fn',total_fn['learning'] 
+	 
 	
 		
 			

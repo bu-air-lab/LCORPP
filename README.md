@@ -11,11 +11,10 @@ mkdir software
 
 ```sh
 $ sudo apt-install -y cmake
-$ 
 $ sudo pip install virtualenv      
-$ virtualenv .env                  
-$ source .env/bin/activate         
-$ pip install -r LSTM-CORPP/requirements.txt  
+$ virtualenv -p python3 ~/.env                  
+$ source ~/.env/bin/activate         
+$ pip install -r LCORPP/requirements.txt  
 ```
 
 
@@ -63,3 +62,11 @@ $ git clone https://github.com/AdaCompNUS/sarsop.git
 $ cd sarsop/src
 $ make 
 ```
+
+## Run the simulator
+```sh
+$ cd ~/LCORPP
+$ python simulator.py  
+```
+
+
