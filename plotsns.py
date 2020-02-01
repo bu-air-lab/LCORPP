@@ -1,11 +1,10 @@
 import numpy as np
 import matplotlib.pyplot as plt
-plt.rcParams.update({'errorbar.capsize':2,
-'legend.fontsize': 'x-large'})
-plt.rc('xtick',labelsize=16)
-plt.rc('ytick',labelsize=16)
+plt.rcParams.update({'errorbar.capsize':2})
 import pandas as pd
 import csv
+import seaborn as sns
+
 
 def plotbatchesbar():
 	df = pd.read_csv('batches.csv').drop(['Unnamed: 0'],axis=1)
@@ -69,30 +68,26 @@ def plotbatchesscatter():
 	xaxis=['1','2','3','4']
 	##############  F1 Score ########################
 	
-	l4 = plt.plot(xaxis,df.iloc[0:4,0],marker='*',markersize=8,linestyle='-.',label='LCORPP (No Data)',color='b')
+	l4 = plt.plot(xaxis,df.iloc[0:4,0],marker='^',linestyle='-.',label='Ours',color='b')
+	
 	plt.errorbar(xaxis,df.iloc[0:4,0],yerr=df.iloc[0:4,1], linestyle="None",label=None,color='b')
-	l5 = plt.plot(xaxis,df.iloc[0:4,2],marker='^',markersize=8,linestyle='-',label='LCORPP (Using Data)',color='k')
-	plt.errorbar(xaxis,df.iloc[0:4,2],yerr=df.iloc[0:4,3], linestyle="None",label=None,color='k')
-	ax.yaxis.grid(which ='major',zorder=0,color='grey')
 
 	plt.xlabel('Batch', fontsize= 16)
 	plt.ylabel('F1 Score', fontsize= 16)
 	#ax=plt.subplot(1,2,2)
 
-	ax.set_ylim([0.4, 0.9])
-	ax.legend(loc='upper left', bbox_to_anchor=(-0.1, 1.15),  shadow=True, ncol=2)
 	'''
 	##############   Cost  #################
 	
-	l4 = plt.plot(xaxis,df.iloc[0:3,7],marker='^',linestyle='-.',label='LCORPP (Ours)')
+	l4 = plt.plot(xaxis,df.iloc[0:3,7],marker='^',linestyle='-.',label='Ours')
 	
 	plt.errorbar(xaxis,df.iloc[0:3,7],yerr=df.iloc[0:3,5], linestyle="None",label=None)
 	ax.legend(loc='upper left', bbox_to_anchor=(-1.10, 1.15),  shadow=True, ncol=1)
 	plt.ylabel('Cost (s)', fontsize= 16)
 	plt.xlabel('Batch', fontsize= 16)
 	'''
-	#plt.savefig('batches.pdf')
-	plt.show()
+	plt.savefig('batches.pdf')
+	#plt.show()
 	
 
 
@@ -142,14 +137,14 @@ def plotcomparison():
 	ax2.set_ylabel('Cost', fontsize=16)
 	ax.set_ylabel('F1 Score', fontsize=16)
 	plt.title('Comparison of different batches')
-	plt.xticks(index + bar_width, ('L', 'R', 'L+\nR','Planning','R+P','LCORPP (Ours)'),fontsize=16)
+	plt.xticks(index + bar_width, ('Learning', 'Reasoning', 'Learning+\nReasoning','Planning','CORPP','Ours (ours)'),fontsize=16)
 	#plt.xticks(index + bar_width, list(df['Unnamed: 0']) ,fontsize=16)
 
 	#plt.legend()
 	ax2.legend(loc =1)
 	ax.legend(loc=2)
 	plt.tight_layout()
-	plt.savefig('comparison.pdf')
+	plt.savefig('compariosn.pdf')
 	#plt.show()	
 
 
@@ -157,7 +152,7 @@ def plotcomparisontwosubplots():
 
 	#fig=plt.figure()
 
-	fig=plt.figure(figsize=(10,4.8))
+	fig=plt.figure(figsize=(10,4.5))
 
 	df = pd.read_csv('comparison.csv')#.drop(['Unnamed: 0'],axis=1)
 	print (df)
@@ -172,19 +167,19 @@ def plotcomparisontwosubplots():
 	# create plot
 	#fig, ax = plt.subplots(figsize=(8,6))
 	index = np.arange(n_groups)
-	bar_width = 0.15
-	opacity = 0.6
-	new_x = [i for i in index]
-	rects1 = ax.bar(new_x,list(df['F1 Score']) , yerr= df.iloc[0:6,5],width=0.9,
+	bar_width = 0.2
+	opacity = 0.8
+
+	rects1 = ax.bar(index,list(df['F1 Score']) , bar_width, yerr= df.iloc[0:6,5],
 	alpha=opacity,
-	color='k',
+	color='b',
 	label='F1 Score')
 
 	#rects2 = ax.bar(index + bar_width,list(df['Accuracy']) , bar_width,
 	#alpha=opacity,
 	#color='g',
 	#label='Accuracy')
-	plt.xticks(new_x , ('L', 'R', 'L+R','P','R+P','(Ours)\nLCORPP'),fontsize=16)
+	plt.xticks(index , ('L', 'R', 'L+R','P','CORPP','Ours'),fontsize=16)
 
 	costslist = list(df['Cost'])
 
@@ -196,11 +191,10 @@ def plotcomparisontwosubplots():
 	n_groups = 3
 
 	index = np.arange(n_groups)
-	 
-	new_x = [i for i in index]
-	rects3 = ax2.bar(new_x,df.iloc[3:6,4], yerr= df.iloc[3:6,3],width =0.5,
+	print 
+	rects3 = ax2.bar(index,df.iloc[3:6,4], bar_width, yerr= df.iloc[3:6,3],
 	alpha=opacity,
-	color='k',
+	color='r',
 	label='Cost')
 
 	ax.set_xlabel('Strategy', fontsize=18)
@@ -208,13 +202,12 @@ def plotcomparisontwosubplots():
 
 	ax.set_ylim([0.5, 1])
 	ax2.set_ylim([6, 13])
-	ax2.set_xlim([-0.5, 2.5])
 
 	#plt.ylabel('Probabilites/Costs')
 	ax2.set_ylabel('Cost', fontsize=18)
 	ax.set_ylabel('F1 Score', fontsize=18)
 	#plt.title('Pairwise comparison of various SDM paradigms')
-	plt.xticks(new_x, ('P','R+P','(Ours)\nLCORPP'),fontsize=16)
+	plt.xticks(index, ('P','CORPP','Ours'),fontsize=16)
 	#plt.xticks(index + bar_width, list(df['Unnamed: 0']) ,fontsize=16)
 
 	#plt.legend()
@@ -223,8 +216,8 @@ def plotcomparisontwosubplots():
 	#plt.suptitle('Performance of various SDM paradigms')
 	
 	plt.tight_layout()
-	#plt.savefig('compariosn.pdf')
-	plt.show()	
+	plt.savefig('compariosn.pdf')
+	#plt.show()	
 
 
 
@@ -243,45 +236,35 @@ def inaccuratekb():
 		#print metric
 	
 	ax=plt.subplot(1,2,1)
-	xaxis=[1,2,3]
-	
+	xaxis=['Low','Medium','High']
 	##############  F1 Score ########################
-	l1 = plt.plot(xaxis,df.iloc[0,0:3],marker='*',markersize=8,linestyle='-.',label='R',color='m')
-	l2 = plt.plot(xaxis,df.iloc[1,0:3],marker='D',markersize=8,linestyle=':',label='L+R',color='c')
-	l3 = plt.plot(xaxis,df.iloc[2,0:3],marker='o',markersize=8,linestyle='--',label='R+P',color='r')
-	l4 = plt.plot(xaxis,df.iloc[3,0:3],marker='^',markersize=8,linestyle='-',label='LCORPP (Ours)',color='b')
+	l1 = plt.plot(xaxis,df.iloc[0,0:3],marker='*',linestyle='-',label='Reasoning',color='m')
+	l2 = plt.plot(xaxis,df.iloc[1,0:3],marker='D',linestyle=':',label='Learning+ Reasoning',color='c')
+	l3 = plt.plot(xaxis,df.iloc[2,0:3],marker='o',linestyle='--',label='CORPP',color='r')
+	l4 = plt.plot(xaxis,df.iloc[3,0:3],marker='^',linestyle='-.',label='Ours',color='b')
 	print (df.iloc[0,13:16])
 	plt.errorbar(xaxis,df.iloc[0,0:3],yerr=df.iloc[0,13:16], linestyle="None",label=None,color='m')
 	plt.errorbar(xaxis,df.iloc[1,0:3],yerr=df.iloc[1,13:16], linestyle="None",label=None,color='c')
 	plt.errorbar(xaxis,df.iloc[2,0:3],yerr=df.iloc[2,13:16], linestyle="None",label=None,color='r')
 	plt.errorbar(xaxis,df.iloc[3,0:3],yerr=df.iloc[3,13:16], linestyle="None",label=None,color='b')
-	plt.xticks(xaxis , ['Low','Medium','High'],fontsize=16)
-	ax.set_xlim([0.5, 3.5])
-	ax.yaxis.grid(which ='major',zorder=0,color='grey')
 
 	plt.xlabel('Knowledge level', fontsize= 18)
 	plt.ylabel('F1 Score', fontsize= 18)
 	ax=plt.subplot(1,2,2)
 
 	##############   Cost  #################
-	l1 = plt.plot(xaxis,df.iloc[0,3:6],marker='*',markersize=8,linestyle='-.',label='R',color='m')
-	l2 = plt.plot(xaxis,df.iloc[1,3:6],marker='D',markersize=8,linestyle=':',label='L+R',color='c')
-	l3 = plt.plot(xaxis,df.iloc[2,3:6],marker='o',markersize=8,linestyle='--',label='R+P',color='r')
-	l4 = plt.plot(xaxis,df.iloc[3,3:6],marker='^',markersize=8,linestyle='-',label='LCORPP (Ours)',color='b')
+	l1 = plt.plot(xaxis,df.iloc[0,3:6],marker='*',linestyle='-',label='Reasoning',color='m')
+	l2 = plt.plot(xaxis,df.iloc[1,3:6],marker='D',linestyle=':',label='Learning+ Reasoning',color='c')
+	l3 = plt.plot(xaxis,df.iloc[2,3:6],marker='o',linestyle='--',label='CORPP',color='r')
+	l4 = plt.plot(xaxis,df.iloc[3,3:6],marker='^',linestyle='-.',label='Ours',color='b')
 	plt.errorbar(xaxis,df.iloc[2,3:6],yerr=df.iloc[2,6:9], linestyle="None",label=None,color='r')
 	plt.errorbar(xaxis,df.iloc[3,3:6],yerr=df.iloc[3,6:9], linestyle="None",label=None,color='b')
-	ax.legend(loc='upper left', bbox_to_anchor=(-1.05, 1.15),  shadow=True, ncol=4)
-	ax.yaxis.grid(which ='major',zorder=0,color='grey')
-
-	plt.ylabel('Cost', fontsize= 18)
+	ax.legend(loc='upper left', bbox_to_anchor=(-1.05, 1.13),  shadow=True, ncol=4)
+	plt.ylabel('Cost (s)', fontsize= 18)
 	plt.xlabel('Knowledge level', fontsize= 18)
-	plt.xticks(xaxis , ['Low','Medium','High'],fontsize=16)
-	ax.set_xlim([0.5, 3.5])
-
-
 	#fig.tight_layout()
-	#plt.savefig('inaccuratekb.pdf')
-	plt.show()	
+	plt.savefig('inaccuratekb.pdf')
+	#plt.show()	
    
 	''' 
 		plt.ylabel(metric, fontsize= xfont)
@@ -324,10 +307,10 @@ def partialsensor():
 	ax=plt.subplot(1,2,1)
 	xaxis=['Partial','Full']
 	##############  F1 Score ########################
-	l1 = plt.plot(xaxis,df.iloc[0,0:2],marker='*',markersize=8,linestyle='-.',label='L',color='g')
-	l2 = plt.plot(xaxis,df.iloc[1,0:2],marker='D',markersize=8,linestyle=':',label='L+R',color='c')
+	l1 = plt.plot(xaxis,df.iloc[0,0:2],marker='*',linestyle='-',label='Learning',color='g')
+	l2 = plt.plot(xaxis,df.iloc[1,0:2],marker='D',linestyle=':',label='Learning+ Reasoning',color='c')
 
-	l4 = plt.plot(xaxis,df.iloc[2,0:2],marker='^',markersize=8,linestyle='-',label='LCORPP (Ours)',color='b')
+	l4 = plt.plot(xaxis,df.iloc[2,0:2],marker='^',linestyle='-.',label='Ours',color='b')
 
 	plt.errorbar(xaxis,df.iloc[0,0:2],yerr=df.iloc[0,9:11], linestyle="None",label=None,color='g')
 	plt.errorbar(xaxis,df.iloc[1,0:2],yerr=df.iloc[1,9:11], linestyle="None",label=None,color='c')
@@ -341,14 +324,14 @@ def partialsensor():
 	ax=plt.subplot(1,2,2)
 
 	##############   Cost  #################
-	#l1 = plt.plot(xaxis,df.iloc[0,2:4],marker='*',linestyle='-',label='L')
-	#l2 = plt.plot(xaxis,df.iloc[1,2:4],marker='D',linestyle=':',label='L+R')
+	#l1 = plt.plot(xaxis,df.iloc[0,2:4],marker='*',linestyle='-',label='Learning')
+	#l2 = plt.plot(xaxis,df.iloc[1,2:4],marker='D',linestyle=':',label='Learning+ Reasoning')
 	
-	l4 = plt.plot(xaxis,df.iloc[2,2:4],marker='^',markersize=8,linestyle='-',label='LCORPP (Ours)',color='b')
+	l4 = plt.plot(xaxis,df.iloc[2,2:4],marker='^',linestyle='-.',label='Ours',color='b')
 	plt.errorbar(xaxis,df.iloc[2,2:4],yerr=df.iloc[2,4:6], linestyle="None",label=None,color='b')
 
 	#ax.legend(loc='upper left', bbox_to_anchor=(-1.10, 1.15),  shadow=True, ncol=2)
-	plt.ylabel('Cost', fontsize= 16)
+	plt.ylabel('Cost (s)', fontsize= 16)
 	plt.xlabel('Trajectory', fontsize= 16)
 
 	#plt.show()
@@ -359,44 +342,39 @@ def partialsensorsingleplot():
 
 	df = pd.read_csv('partialsensor.csv').drop(['Unnamed: 0'],axis=1)
 	print (df)
-	fig=plt.figure()
+#	fig=plt.figure()
 
 	print (df.iloc[1,0:3])
-	#l1 = plt.plot(['a','b','c'],df.loc[1,0:2],marker='*',linestyle='-',label='MOMDP(ours)')
+	sns.set()
 	
-	#for count,metric in enumerate(list(df)):
-	#	pass
-		#print metric
-	
-	ax=plt.subplot(1,1,1)
-	xaxis=[0.5,2.5]
+#	ax=plt.subplot(1,1,1)
+	xaxis=['Partial','Full']
 	##############  F1 Score ########################
-	l1 = plt.plot(xaxis,df.iloc[0,0:2],marker='*',markersize=8,linestyle='-.',label='L',color='g')
-	l2 = plt.plot(xaxis,df.iloc[1,0:2],marker='D',markersize=8,linestyle=':',label='L+R',color='c')
+	l1 = sns.lineplot(xaxis,df.iloc[0,0:2])
+	l2 = sns.lineplot(xaxis,df.iloc[1,0:2])
 
-	l4 = plt.plot(xaxis,df.iloc[2,0:2],marker='^',markersize=8,linestyle='-',label='LCORPP (Ours)',color='b')
-
+	#l4 = plt.plot(xaxis,df.iloc[2,0:2],marker='^',linestyle='-.',label='Ours',color='b')
+	'''
 	plt.errorbar(xaxis,df.iloc[0,0:2],yerr=df.iloc[0,9:11], linestyle="None",label=None,color='g')
 	plt.errorbar(xaxis,df.iloc[1,0:2],yerr=df.iloc[1,9:11], linestyle="None",label=None,color='c')
 	plt.errorbar(xaxis,df.iloc[2,0:2],yerr=df.iloc[2,9:11], linestyle="None",label=None,color='b')
 	ax.set_ylim([0.4, 1])
-	ax.set_xlim([0, 3])
 
-	plt.xticks(xaxis , ('Partial','Full'),fontsize=16)
 	plt.xlabel('Trajectory', fontsize= 16)
 	plt.ylabel('F1 Score', fontsize= 16)
 
-	ax.legend(loc='upper left', bbox_to_anchor=(-0.00, 1.15),  shadow=True, ncol=3)
-	
+	ax.legend(loc='upper left', bbox_to_anchor=(0.050, 1.15),  shadow=True, ncol=3)
+	'''
 
 	plt.show()
-	#plt.savefig('partialsensor.pdf')
-
+	'''
+	plt.savefig('partialsensor.pdf')
+	'''
 def main():
 
-	plotbatchesscatter()
+	#plotbatchesscatter()
 	#inaccuratekb()
-	#partialsensorsingleplot()
+	partialsensorsingleplot()
 	#plotcomparisontwosubplots()
 
 

@@ -31,9 +31,7 @@ class Simulator:
 		self.IDs['0']=[]
 		self.learning=Learning('./','interposx.csv','interposy.csv')
 		self.trajectory_label=0
-		self.exp_dataset_pos = []
-		self.exp_dataset_neg = []
-		self.batchnumber = 1
+		self.exp_dataset = {}
 		
 
 	def sample (self, alist, distribution):
@@ -339,7 +337,7 @@ class Simulator:
 			elif res <l_thresh and self.trajectory_label == 1.0:
 				fn =1
 				success =0
-				print ('CASE IV the person is not interested')
+			print	('CASE IV the person is not interested')
 		
 
 

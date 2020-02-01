@@ -69,18 +69,14 @@ def plotbatchesscatter():
 	xaxis=['1','2','3','4']
 	##############  F1 Score ########################
 	
-	l4 = plt.plot(xaxis,df.iloc[0:4,0],marker='*',markersize=8,linestyle='-.',label='LCORPP (No Data)',color='b')
+	l4 = plt.plot(xaxis,df.iloc[0:4,0],marker='^',markersize=8,linestyle='-',label='LCORPP (Ours)',color='b')
+	
 	plt.errorbar(xaxis,df.iloc[0:4,0],yerr=df.iloc[0:4,1], linestyle="None",label=None,color='b')
-	l5 = plt.plot(xaxis,df.iloc[0:4,2],marker='^',markersize=8,linestyle='-',label='LCORPP (Using Data)',color='k')
-	plt.errorbar(xaxis,df.iloc[0:4,2],yerr=df.iloc[0:4,3], linestyle="None",label=None,color='k')
-	ax.yaxis.grid(which ='major',zorder=0,color='grey')
 
 	plt.xlabel('Batch', fontsize= 16)
 	plt.ylabel('F1 Score', fontsize= 16)
 	#ax=plt.subplot(1,2,2)
 
-	ax.set_ylim([0.4, 0.9])
-	ax.legend(loc='upper left', bbox_to_anchor=(-0.1, 1.15),  shadow=True, ncol=2)
 	'''
 	##############   Cost  #################
 	
@@ -91,8 +87,8 @@ def plotbatchesscatter():
 	plt.ylabel('Cost (s)', fontsize= 16)
 	plt.xlabel('Batch', fontsize= 16)
 	'''
-	#plt.savefig('batches.pdf')
-	plt.show()
+	plt.savefig('batches.pdf')
+	#plt.show()
 	
 
 
@@ -149,7 +145,7 @@ def plotcomparison():
 	ax2.legend(loc =1)
 	ax.legend(loc=2)
 	plt.tight_layout()
-	plt.savefig('comparison.pdf')
+	plt.savefig('compariosn.pdf')
 	#plt.show()	
 
 
@@ -168,24 +164,24 @@ def plotcomparisontwosubplots():
 	n_groups = 6
 	#means_frank = (90, 55, 40)
 	#means_guido = (85, 62, 54)
-
+	
 	# create plot
 	#fig, ax = plt.subplots(figsize=(8,6))
 	index = np.arange(n_groups)
 	bar_width = 0.15
-	opacity = 0.6
+	opacity = 0.7
 	new_x = [i for i in index]
 	rects1 = ax.bar(new_x,list(df['F1 Score']) , yerr= df.iloc[0:6,5],width=0.9,
 	alpha=opacity,
 	color='k',
-	label='F1 Score')
-
+	label='F1 Score',zorder=3)
+	ax.yaxis.grid(which ='major',zorder=0,color='grey')
 	#rects2 = ax.bar(index + bar_width,list(df['Accuracy']) , bar_width,
 	#alpha=opacity,
 	#color='g',
 	#label='Accuracy')
 	plt.xticks(new_x , ('L', 'R', 'L+R','P','R+P','(Ours)\nLCORPP'),fontsize=16)
-
+	#plt.axhline()
 	costslist = list(df['Cost'])
 
 	for x in costslist:
@@ -201,7 +197,8 @@ def plotcomparisontwosubplots():
 	rects3 = ax2.bar(new_x,df.iloc[3:6,4], yerr= df.iloc[3:6,3],width =0.5,
 	alpha=opacity,
 	color='k',
-	label='Cost')
+	label='Cost',zorder=3)
+	ax2.yaxis.grid(which ='major',zorder=0,color='grey')
 
 	ax.set_xlabel('Strategy', fontsize=18)
 	ax2.set_xlabel('Strategy', fontsize=18)
@@ -225,6 +222,7 @@ def plotcomparisontwosubplots():
 	plt.tight_layout()
 	#plt.savefig('compariosn.pdf')
 	plt.show()	
+	
 
 
 
@@ -243,8 +241,7 @@ def inaccuratekb():
 		#print metric
 	
 	ax=plt.subplot(1,2,1)
-	xaxis=[1,2,3]
-	
+	xaxis=['Low','Medium','High']
 	##############  F1 Score ########################
 	l1 = plt.plot(xaxis,df.iloc[0,0:3],marker='*',markersize=8,linestyle='-.',label='R',color='m')
 	l2 = plt.plot(xaxis,df.iloc[1,0:3],marker='D',markersize=8,linestyle=':',label='L+R',color='c')
@@ -255,9 +252,6 @@ def inaccuratekb():
 	plt.errorbar(xaxis,df.iloc[1,0:3],yerr=df.iloc[1,13:16], linestyle="None",label=None,color='c')
 	plt.errorbar(xaxis,df.iloc[2,0:3],yerr=df.iloc[2,13:16], linestyle="None",label=None,color='r')
 	plt.errorbar(xaxis,df.iloc[3,0:3],yerr=df.iloc[3,13:16], linestyle="None",label=None,color='b')
-	plt.xticks(xaxis , ['Low','Medium','High'],fontsize=16)
-	ax.set_xlim([0.5, 3.5])
-	ax.yaxis.grid(which ='major',zorder=0,color='grey')
 
 	plt.xlabel('Knowledge level', fontsize= 18)
 	plt.ylabel('F1 Score', fontsize= 18)
@@ -271,14 +265,8 @@ def inaccuratekb():
 	plt.errorbar(xaxis,df.iloc[2,3:6],yerr=df.iloc[2,6:9], linestyle="None",label=None,color='r')
 	plt.errorbar(xaxis,df.iloc[3,3:6],yerr=df.iloc[3,6:9], linestyle="None",label=None,color='b')
 	ax.legend(loc='upper left', bbox_to_anchor=(-1.05, 1.15),  shadow=True, ncol=4)
-	ax.yaxis.grid(which ='major',zorder=0,color='grey')
-
 	plt.ylabel('Cost', fontsize= 18)
 	plt.xlabel('Knowledge level', fontsize= 18)
-	plt.xticks(xaxis , ['Low','Medium','High'],fontsize=16)
-	ax.set_xlim([0.5, 3.5])
-
-
 	#fig.tight_layout()
 	#plt.savefig('inaccuratekb.pdf')
 	plt.show()	
@@ -375,6 +363,7 @@ def partialsensorsingleplot():
 	l2 = plt.plot(xaxis,df.iloc[1,0:2],marker='D',markersize=8,linestyle=':',label='L+R',color='c')
 
 	l4 = plt.plot(xaxis,df.iloc[2,0:2],marker='^',markersize=8,linestyle='-',label='LCORPP (Ours)',color='b')
+	ax.yaxis.grid(which ='major',zorder=0,color='grey')
 
 	plt.errorbar(xaxis,df.iloc[0,0:2],yerr=df.iloc[0,9:11], linestyle="None",label=None,color='g')
 	plt.errorbar(xaxis,df.iloc[1,0:2],yerr=df.iloc[1,9:11], linestyle="None",label=None,color='c')
@@ -392,11 +381,12 @@ def partialsensorsingleplot():
 	plt.show()
 	#plt.savefig('partialsensor.pdf')
 
+
 def main():
 
-	plotbatchesscatter()
+	#plotbatchesscatter()
 	#inaccuratekb()
-	#partialsensorsingleplot()
+	partialsensorsingleplot()
 	#plotcomparisontwosubplots()
 
 

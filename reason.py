@@ -12,10 +12,10 @@ class Reason:
 		f.write("\n?{intention=interested}|obs(currenttime="+time+"),obs(atlocation="+location+"),obs(classifier="+lstm+").")
 		f.close()
 		temp = subprocess.check_output('plog -t '+filename, shell=True)
-		print "I am querying the file ",filename
+		print ("I am querying the file ",filename)
 		lines = temp.splitlines()
 		prob = lines[3].split()[2]
-		print "\n?{intention=interested|obs(currenttime="+time+"), obs(atlocation="+location+"),obs(classifier="+lstm+"). =" ,prob
+		print ("\n?{intention=interested|obs(currenttime="+time+"), obs(atlocation="+location+"),obs(classifier="+lstm+"). =" ,prob)
 		self.delete(filename)
 		return prob
 
@@ -27,10 +27,10 @@ class Reason:
 		f.write("\n?{intention=interested}|obs(currenttime="+time+"),obs(atlocation="+location+").")
 		f.close()
 		temp = subprocess.check_output('plog -t '+filename, shell=True)
-		print "I am querying the file ",filename
+		print ("I am querying the file ",filename)
 		lines = temp.splitlines()
 		prob = lines[3].split()[2]
-		print "{intention=interested|obs(currenttime="+time+"), obs(atlocation="+location+") = ",prob
+		print ("{intention=interested|obs(currenttime="+time+"), obs(atlocation="+location+") = ",prob)
 		self.delete(filename)
 		return prob
 

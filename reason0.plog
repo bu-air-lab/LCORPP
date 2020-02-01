@@ -50,3 +50,6 @@ identity: person.
 %?{identity=student}| obs(currenttime = afternoon),obs(atlocation = classroom),obs(classifier=zero).
 
 
+
+%?{intention=interested}|obs(currenttime=morning),obs(atlocation=library),obs(classifier=zero).
+

@@ -223,6 +223,6 @@ class Model(object):
 
 def main():
   p = Model()
-  print 'hi'
+
 if __name__ == '__main__':
   main()
